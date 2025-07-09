@@ -17,7 +17,7 @@ export interface Patient {
   dob?: string
   phone?: string
   email?: string
-  medical_history?: Record<string, any>
+  medical_history?: Record<string, unknown>
   created_at: string
 }
 
@@ -65,10 +65,10 @@ export interface CreatePatientData {
   dob?: string
   phone?: string
   email?: string
-  medical_history?: Record<string, any>
+  medical_history?: Record<string, unknown>
 }
 
-export interface UpdatePatientData extends Partial<CreatePatientData> {}
+export type UpdatePatientData = Partial<CreatePatientData>
 
 export interface CreateAppointmentData {
   patient_id: string
@@ -125,4 +125,11 @@ export interface ClinicStats {
   pending_invoices: number
   total_revenue: number
   monthly_revenue: number
+}
+
+// Tipos para configuración de clínica
+export interface ClinicConfigFormData {
+  name: string
+  primary_color?: string
+  logo_url?: string
 } 

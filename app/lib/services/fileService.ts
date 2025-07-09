@@ -65,7 +65,7 @@ export class FileService {
       const filePath = `clinics/${profile.clinic_id}/patients/${patientId}/${fileName}`
 
       // Subir archivo a Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('patient-files')
         .upload(filePath, file, {
           cacheControl: '3600',

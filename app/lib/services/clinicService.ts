@@ -61,7 +61,7 @@ export class ClinicService {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('clinic_id')
+        .select('clinic_id, role')
         .eq('id', user.id)
         .single()
 
@@ -107,7 +107,7 @@ export class ClinicService {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('clinic_id')
+        .select('clinic_id, role')
         .eq('id', user.id)
         .single()
 
@@ -136,7 +136,7 @@ export class ClinicService {
       const filePath = `clinics/${profile.clinic_id}/${fileName}`
 
       // Subir archivo a Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('clinic-assets')
         .upload(filePath, file, {
           cacheControl: '3600',

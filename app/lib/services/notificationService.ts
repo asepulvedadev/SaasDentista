@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import type { Appointment, Patient } from '@/lib/types/clinic'
+import type { Appointment, Patient, Invoice } from '@/lib/types/clinic'
 
 /**
  * Servicio para envío de notificaciones
@@ -29,7 +29,7 @@ export class NotificationService {
         minute: '2-digit'
       })
 
-      const { data, error } = await this.resend.emails.send({
+      const { error } = await this.resend.emails.send({
         from: 'SaaS Dental <noreply@saasdental.com>',
         to: [patient.email],
         subject: `Recordatorio de cita - ${formattedDate}`,
@@ -84,7 +84,7 @@ export class NotificationService {
         minute: '2-digit'
       })
 
-      const { data, error } = await this.resend.emails.send({
+      const { error } = await this.resend.emails.send({
         from: 'SaaS Dental <noreply@saasdental.com>',
         to: [patient.email],
         subject: `Cita confirmada - ${formattedDate}`,
@@ -138,7 +138,7 @@ export class NotificationService {
         minute: '2-digit'
       })
 
-      const { data, error } = await this.resend.emails.send({
+      const { error } = await this.resend.emails.send({
         from: 'SaaS Dental <noreply@saasdental.com>',
         to: [patient.email],
         subject: `Cita cancelada - ${formattedDate}`,
@@ -173,7 +173,7 @@ export class NotificationService {
    * Enviar factura por email
    */
   static async sendInvoice(
-    invoice: any,
+    invoice: Invoice,
     patient: Patient
   ): Promise<{ success: boolean; error: string | null }> {
     try {
@@ -181,7 +181,7 @@ export class NotificationService {
         return { success: false, error: 'El paciente no tiene email registrado' }
       }
 
-      const { data, error } = await this.resend.emails.send({
+      const { error } = await this.resend.emails.send({
         from: 'SaaS Dental <noreply@saasdental.com>',
         to: [patient.email],
         subject: `Factura #${invoice.id.slice(0, 8)}`,
@@ -218,7 +218,7 @@ export class NotificationService {
    * Enviar recordatorio de factura pendiente
    */
   static async sendInvoiceReminder(
-    invoice: any,
+    invoice: Invoice,
     patient: Patient
   ): Promise<{ success: boolean; error: string | null }> {
     try {
@@ -226,7 +226,7 @@ export class NotificationService {
         return { success: false, error: 'El paciente no tiene email registrado' }
       }
 
-      const { data, error } = await this.resend.emails.send({
+      const { error } = await this.resend.emails.send({
         from: 'SaaS Dental <noreply@saasdental.com>',
         to: [patient.email],
         subject: `Recordatorio de factura pendiente #${invoice.id.slice(0, 8)}`,

@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { createBrowserClient } from '@/lib/supabase/client'
 import type { 
   LoginCredentials, 
@@ -274,8 +273,8 @@ export class AuthService {
       }
 
       return data as UserProfile
-    } catch (error) {
-      console.error('Error al obtener perfil:', error)
+    } catch (_error) {
+      console.error('Error al obtener perfil:', _error)
       return null
     }
   }
@@ -287,9 +286,9 @@ export class AuthService {
     try {
       const supabase = createBrowserClient()
       
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (error || !user) {
+      if (!user) {
         return null
       }
 
@@ -306,8 +305,8 @@ export class AuthService {
         profile,
         isAuthenticated: true,
       }
-    } catch (error) {
-      console.error('Error al obtener usuario actual:', error)
+    } catch (_error) {
+      console.error('Error al obtener usuario actual:', _error)
       return null
     }
   }

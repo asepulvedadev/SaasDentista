@@ -7,7 +7,7 @@ import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAuth } from '@/lib/contexts/AuthContext'
-import { isValidEmail, isValidPassword } from '@/lib/utils'
+import { isValidEmail } from '@/lib/utils'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import Link from 'next/link'
 
@@ -206,7 +206,7 @@ function LoginContent() {
               </Link>
             </p>
           </div>
-        </form>
+    </form>
       </div>
     </div>
   )

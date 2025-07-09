@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [initialized, setInitialized] = useState(false)
+  
 
   /**
    * Inicializar el estado de autenticación al cargar la aplicación
@@ -50,7 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setError('Error al cargar la sesión del usuario')
       } finally {
         setLoading(false)
-        setInitialized(true)
       }
     }
 
@@ -59,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       initializeAuth()
     } else {
       setLoading(false)
-      setInitialized(true)
     }
   }, [])
 
