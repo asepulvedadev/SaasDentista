@@ -318,7 +318,7 @@ export class AuthService {
     try {
       const user = await this.getCurrentUser()
       return user !== null
-    } catch (error) {
+    } catch {
       return false
     }
   }

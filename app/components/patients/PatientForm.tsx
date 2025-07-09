@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import { Patient, CreatePatientData } from '../../lib/types/clinic';
 import { Button } from '../ui/Button';

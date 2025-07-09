@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { PatientService } from '../../lib/services/patientService';
 import { Patient, CreatePatientData } from '../../lib/types/clinic';
