@@ -33,6 +33,60 @@ export class FileService {
   }
 
   /**
+   * Obtener todos los archivos con filtros opcionales
+   */
+  static async getFiles(filters: { patient_id?: string; file_type?: string } = {}): Promise<{ data: PatientFile[]; error: string | null }> {
+    try {
+      const supabase = createBrowserClient()
+      
+      // Obtener el clinic_id del usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        return { data: [], error: 'Usuario no autenticado' }
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('clinic_id')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile?.clinic_id) {
+        return { data: [], error: 'Clínica no encontrada' }
+      }
+
+      let query = supabase
+        .from('patient_files')
+        .select(`
+          *,
+          patient:patients(full_name)
+        `)
+        .eq('clinic_id', profile.clinic_id)
+        .order('uploaded_at', { ascending: false })
+
+      // Aplicar filtros
+      if (filters.patient_id) {
+        query = query.eq('patient_id', filters.patient_id)
+      }
+
+      if (filters.file_type) {
+        query = query.eq('file_type', filters.file_type)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        return { data: [], error: 'Error al obtener archivos' }
+      }
+
+      return { data: data || [], error: null }
+    } catch (error) {
+      console.error('Error en getFiles:', error)
+      return { data: [], error: 'Error interno del servidor' }
+    }
+  }
+
+  /**
    * Subir un archivo para un paciente
    */
   static async uploadFile(

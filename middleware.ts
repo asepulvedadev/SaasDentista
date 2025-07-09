@@ -1,5 +1,5 @@
 
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -8,8 +8,57 @@ import type { NextRequest } from 'next/server'
  * Basado en el esquema de clínica dental SaaS
  */
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
+  let res = NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          req.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+          res = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: any) {
+          req.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+          res = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          res.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
 
   // Obtener la sesión actual
   const {
@@ -45,29 +94,34 @@ export async function middleware(req: NextRequest) {
 
   // Si el usuario está autenticado, verificar permisos para rutas específicas
   if (session && !isPublicRoute) {
-    // Obtener el perfil del usuario para verificar roles
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single()
+    try {
+      // Obtener el perfil del usuario para verificar roles
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
 
-    if (profile) {
-      // Rutas que requieren rol de admin
-      const adminRoutes = ['/admin', '/settings', '/users']
-      const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
-      
-      if (isAdminRoute && profile.role !== 'admin') {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
-      }
+      if (profile) {
+        // Rutas que requieren rol de admin
+        const adminRoutes = ['/admin', '/settings', '/users']
+        const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
+        
+        if (isAdminRoute && profile.role !== 'admin') {
+          return NextResponse.redirect(new URL('/dashboard', req.url))
+        }
 
-      // Rutas que requieren rol de dentista o admin
-      const dentistRoutes = ['/reports', '/analytics']
-      const isDentistRoute = dentistRoutes.some(route => pathname.startsWith(route))
-      
-      if (isDentistRoute && !['admin', 'dentist'].includes(profile.role)) {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
+        // Rutas que requieren rol de dentista o admin
+        const dentistRoutes = ['/reports', '/analytics']
+        const isDentistRoute = dentistRoutes.some(route => pathname.startsWith(route))
+        
+        if (isDentistRoute && !['admin', 'dentist'].includes(profile.role)) {
+          return NextResponse.redirect(new URL('/dashboard', req.url))
+        }
       }
+    } catch (error) {
+      // Si hay error al obtener el perfil, continuar sin restricciones
+      console.error('Middleware error getting profile:', error)
     }
   }
 
