@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Patient } from '../../lib/types/clinic';
 import { FileService } from '../../lib/services/fileService';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 
 interface FileUploadFormProps {
   patients: Patient[];
